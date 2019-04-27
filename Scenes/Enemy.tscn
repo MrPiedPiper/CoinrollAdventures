@@ -52,6 +52,7 @@ __meta__ = {
 [node name="EnemyArea2D" type="Area2D" parent="." groups=[
 "Enemy",
 ]]
+collision_mask = 3
 __meta__ = {
 "_edit_group_": true,
 "_edit_lock_": true

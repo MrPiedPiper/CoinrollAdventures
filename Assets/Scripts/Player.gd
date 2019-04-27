@@ -156,7 +156,17 @@ func set_aim_dir():
 		newDir.x -= 1
 	aim_dir = newDir
 
+func _enemy_stole_coin():
+	setCoinCount(heldCoins - 1)
 
+func setCoinCount(newValue):
+	print(str("Now holding ",newValue))
+	heldCoins = newValue
+	if heldCoins < 1:
+		die()
+
+func die():
+	print("bleh")
 
 
 

@@ -1,5 +1,7 @@
 extends KinematicBody2D
 
+signal enemy_stole_coin
+
 export var hasCoin = false
 export var acceleration = 100
 export var topSpeed = 35
@@ -69,6 +71,10 @@ func grab_coin():
 			set_has_coin(true)
 			touching[i].get_parent().queue_free()
 			break
+		elif touching[i].get_parent().get_parent().is_in_group("Player"):
+			set_has_coin(true)
+			connect("enemy_stole_coin", touching[i].get_parent().get_parent(), "_enemy_stole_coin")
+			emit_signal("enemy_stole_coin")
 
 func set_has_coin(newValue):
 	hasCoin = newValue
