@@ -1,13 +1,15 @@
 extends KinematicBody2D
 
 export var hasCoin = false
-export var acceleration = 350
-export var topSpeed = 75
+export var acceleration = 100
+export var topSpeed = 35
 
 var velocity = Vector2(0, 0)
 var curr_target
 
 var isCyclingRay = false
+
+var touching = []
 
 #If the Enemy sees the player within range and doesn't ahve a coin, have the Enemy run towards the plyaer
 
@@ -18,6 +20,7 @@ func _ready():
 func _process(delta):
 	if !hasCoin:
 		cycleRay()
+		grab_coin()
 	
 func _physics_process(delta):
 	if !hasCoin:
@@ -57,6 +60,32 @@ func moveTowardsTarget(inputDelta):
 	if curr_target.x < position.x:
 		newVel.x -= acceleration * inputDelta
 	velocity = move_and_slide(newVel)
+	
+func grab_coin():
+	if touching.size() == 0:
+		return
+	for i in range(0, touching.size()):
+		if touching[i].get_parent().is_in_group("CoinDown"):
+			set_has_coin(true)
+			touching[i].get_parent().queue_free()
+			break
+
+func set_has_coin(newValue):
+	hasCoin = newValue
+	if hasCoin:
+		$KinematicBody2D/Sprite.visible = true
+		$KinematicBody2D/CoinHitbox.disabled = false
+	else:
+		$KinematicBody2D/Sprite.visible = false
+		$KinematicBody2D/CoinHitbox.disabled = true
+
+func _on_EnemyArea2D_area_entered(area):
+	touching.append(area)
+
+func _on_EnemyArea2D_area_exited(area):
+	touching.erase(area)
+
+
 
 
 
