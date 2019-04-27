@@ -37,14 +37,16 @@ func cycleRay():
 	isCyclingRay = true
 	var collisions = []
 	for i in range(0, coins.size()):
-		var angle = get_angle_to(coins[i].position)
-		$RayCast2D.rotation = angle - PI/2
-		var collision = $RayCast2D
-		if collision.is_colliding() and collision.get_collider() != null:
-			if collision.get_collider().is_in_group("Player") or collision.get_collider().is_in_group("CoinDown"):
-				curr_target = collision.get_collider().position
-				break
-		yield(get_tree().create_timer(.1), "timeout")
+		var currObject = weakref(coins[i])
+		if currObject.get_ref():
+			var angle = get_angle_to(coins[i].position)
+			$RayCast2D.rotation = angle - PI/2
+			var collision = $RayCast2D
+			if collision.is_colliding() and collision.get_collider() != null:
+				if collision.get_collider().is_in_group("Player") or collision.get_collider().is_in_group("CoinDown"):
+					curr_target = collision.get_collider().position
+					break
+			yield(get_tree().create_timer(.1), "timeout")
 	isCyclingRay = false
 	
 func closest_coin_sort(a, b):

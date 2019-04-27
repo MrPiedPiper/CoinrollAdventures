@@ -10,7 +10,7 @@ extents = Vector2( 4, 2 )
 "CoinDown",
 ]]
 scale = Vector2( 5, 5 )
-collision_layer = 524289
+collision_layer = 524288
 collision_mask = 524288
 script = ExtResource( 1 )
 
@@ -29,3 +29,11 @@ collision_mask = 3
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource( 1 )
+
+[node name="KinematicBody2D" type="KinematicBody2D" parent="."]
+collision_mask = 3
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="KinematicBody2D"]
+scale = Vector2( 1, 1 )
+shape = SubResource( 1 )
+one_way_collision = true
