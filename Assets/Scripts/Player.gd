@@ -7,25 +7,26 @@ export var shootVel = 200
 export var gravity = 300
 export var bullet : PackedScene
 
+var coinStatModifier = 0.07
+
+var maxCoins = 6
 var bulletCooldown = 0.3
-var pickupCooldown = 0.3
+var pickupCooldown = 0.2
 
 var canShoot = true
 var canPickup = true
 
 var touchingCoins = []
+var heldCoins = maxCoins
 
 var frictionAmount = 0.2
-
 var velocity : Vector2
-
 var up = Vector2(0, -1)
 
 func _ready():
 	randomize()
 
 func _process(delta):
-	print(touchingCoins)
 	rotatePlayerByMovement()
 
 func _physics_process(delta):
@@ -53,6 +54,7 @@ func movePlayer(inputVelocity, inputDelta):
 	newVel = walk(newVel, inputDelta)
 	#Script for jumping
 	newVel = jump(newVel, inputDelta)
+	print(newVel.x)
 	return newVel
 
 #Script for horizontal movement returns modified Vector2
@@ -63,18 +65,19 @@ func walk(inputVelocity, inputDelta):
 	#If the player is pressing right
 	if Input.is_action_pressed("ui_right"):
 		#Add to the velocity
-		newVel.x += acceleration * inputDelta
+		newVel.x += get_modified_stat(acceleration) * inputDelta
 		#And set hasFriction to false
 		hasFriction = false
 	#If the player is pressing left
 	if Input.is_action_pressed("ui_left"):
 		#Add to the velocity
-		newVel.x -= acceleration * inputDelta
+		newVel.x -= get_modified_stat(acceleration) * inputDelta
 		#And set hasFriction to false
 		hasFriction = false
 	if hasFriction:
 		newVel.x = lerp(newVel.x, 0, frictionAmount)
-	newVel.x = clamp(newVel.x, -topSpeed, topSpeed)
+	var modifiedTopSpeed = get_modified_stat(topSpeed)
+	newVel.x = clamp(newVel.x, -modifiedTopSpeed, modifiedTopSpeed)
 	return newVel
 
 #Script for jumping movement returns modified Vector2
@@ -83,11 +86,11 @@ func jump(inputVelocity, inputDelta):
 		return inputVelocity
 	var newVel = inputVelocity
 	if Input.is_action_pressed("move_jump"):
-		newVel.y = jumpPower * inputDelta
+		newVel.y = get_modified_stat(jumpPower) * inputDelta
 	return newVel
 
 func shoot():
-	if Input.is_action_just_pressed("player_shoot") and canShoot:
+	if Input.is_action_just_pressed("player_shoot") and canShoot and heldCoins > 1:
 		var newBullet = bullet.instance()
 		get_tree().get_root().get_child(0).get_node("ActiveBullets").add_child(newBullet)
 		newBullet.global_position = $RotationNode/BulletSpawn.global_position
@@ -98,11 +101,12 @@ func shoot():
 			shootDir = -1
 		newBullet.linear_velocity = Vector2(shootVel * shootDir, 0)
 		canShoot = false
+		heldCoins -= 1
 		yield(get_tree().create_timer(bulletCooldown), "timeout")
 		canShoot = true
 
 func pickup():
-	if Input.is_action_pressed("player_pickup") and canPickup and touchingCoins.size() > 0:
+	if Input.is_action_pressed("player_pickup") and canPickup and touchingCoins.size() > 0 and heldCoins < maxCoins:
 		var selectedCoin
 		for i in range(0, touchingCoins.size()):
 			if i == 0:
@@ -121,6 +125,7 @@ func pickup():
 		touchingCoins.erase(selectedCoin)
 		selectedCoin.queue_free()
 		canPickup = false
+		heldCoins += 1
 		yield(get_tree().create_timer(bulletCooldown), "timeout")
 		canPickup = true
 
@@ -132,7 +137,8 @@ func _on_PlayerArea2D_area_exited(area):
 	if area.is_in_group("CoinDown"):
 		touchingCoins.erase(area.get_parent())
 
-
+func get_modified_stat(inputStat):
+	return (inputStat + (inputStat * (coinStatModifier * (maxCoins - heldCoins))))
 
 
 
