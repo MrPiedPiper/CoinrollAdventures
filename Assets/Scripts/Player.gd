@@ -1,5 +1,7 @@
 extends KinematicBody2D
 
+signal player_stole_coin
+
 export var acceleration = 700
 export var topSpeed = 150
 export var jumpPower = -13000
@@ -17,6 +19,8 @@ var aim_dir = Vector2(0, 0)
 var canShoot = true
 var canPickup = true
 
+var touching = []
+
 var touchingCoins = []
 var heldCoins = maxCoins
 
@@ -30,6 +34,7 @@ func _ready():
 func _process(delta):
 	set_aim_dir()
 	rotatePlayerByMovement()
+	steal_coin()
 
 func _physics_process(delta):
 	#Add in Gravity
@@ -136,10 +141,12 @@ func pickup():
 func _on_PlayerArea2D_area_entered(area):
 	if area.is_in_group("CoinDown"):
 		touchingCoins.append(area.get_parent())
+	touching.append(area)
 
 func _on_PlayerArea2D_area_exited(area):
 	if area.is_in_group("CoinDown"):
 		touchingCoins.erase(area.get_parent())
+	touching.erase(area)
 
 func get_modified_stat(inputStat):
 	return (inputStat + (inputStat * (coinStatModifier * (maxCoins - heldCoins))))
@@ -160,7 +167,6 @@ func _enemy_stole_coin():
 	setCoinCount(heldCoins - 1)
 
 func setCoinCount(newValue):
-	print(str("Now holding ",newValue))
 	heldCoins = newValue
 	if heldCoins < 1:
 		die()
@@ -168,8 +174,15 @@ func setCoinCount(newValue):
 func die():
 	print("bleh")
 
-
-
+func steal_coin():
+	if Input.is_action_pressed("player_pickup"):
+		for i in range(0, touching.size()):
+			var currObject = touching[i].get_parent()
+			if currObject.is_in_group("Enemy") and currObject.get_has_coin():
+				if heldCoins < maxCoins:
+					connect("player_stole_coin", currObject, "_player_stole_coin")
+					emit_signal("player_stole_coin")
+					setCoinCount(heldCoins+1)
 
 
 

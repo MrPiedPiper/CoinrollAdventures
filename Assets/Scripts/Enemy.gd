@@ -6,6 +6,9 @@ export var hasCoin = false
 export var acceleration = 100
 export var topSpeed = 35
 
+var stunned = false
+var stun_time : float = 1
+
 var velocity = Vector2(0, 0)
 var curr_target
 
@@ -20,12 +23,12 @@ func _ready():
 	pass # Replace with function body.
 
 func _process(delta):
-	if !hasCoin:
+	if !hasCoin and !stunned:
 		cycleRay()
 		grab_coin()
 	
 func _physics_process(delta):
-	if !hasCoin:
+	if !hasCoin and !stunned:
 		moveTowardsTarget(delta)
 
 func cycleRay():
@@ -66,6 +69,8 @@ func moveTowardsTarget(inputDelta):
 	velocity = move_and_slide(newVel)
 	
 func grab_coin():
+	if hasCoin or stunned:
+		return
 	if touching.size() == 0:
 		return
 	for i in range(0, touching.size()):
@@ -87,13 +92,20 @@ func set_has_coin(newValue):
 		$KinematicBody2D/Sprite.visible = false
 		$KinematicBody2D/CoinHitbox.disabled = true
 
+func get_has_coin():
+	return hasCoin
+
 func _on_EnemyArea2D_area_entered(area):
 	touching.append(area)
 
 func _on_EnemyArea2D_area_exited(area):
 	touching.erase(area)
 
-
+func _player_stole_coin():
+	set_has_coin(false)
+	stunned = true
+	yield(get_tree().create_timer(stun_time), "timeout")
+	stunned = false
 
 
 
