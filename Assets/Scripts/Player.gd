@@ -7,6 +7,8 @@ export var shootVel = 15
 export var gravity = 300
 export var bullet : PackedScene
 
+var bulletCooldown = 0.3
+var canShoot = true
 var frictionAmount = 0.2
 
 var velocity : Vector2
@@ -73,7 +75,7 @@ func jump(inputVelocity, inputDelta):
 	return newVel
 
 func shoot():
-	if Input.is_action_just_pressed("player_shoot"):
+	if Input.is_action_just_pressed("player_shoot") and canShoot:
 		var newBullet = bullet.instance()
 		get_tree().get_root().get_child(0).get_node("ActiveBullets").add_child(newBullet)
 		newBullet.global_position = $RotationNode/BulletSpawn.global_position
@@ -83,6 +85,9 @@ func shoot():
 		else:
 			shootDir = -1
 		newBullet.linear_velocity = Vector2(shootVel * shootVel, 0)
+		canShoot = false
+		yield(get_tree().create_timer(bulletCooldown), "timeout")
+		canShoot = true
 
 
 
