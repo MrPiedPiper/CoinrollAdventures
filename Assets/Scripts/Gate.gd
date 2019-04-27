@@ -14,7 +14,6 @@ func _on_deactivated(_node):
 	process_gate()
 	
 func process_gate():
-	print(activeArray.size())
 	if activeArray.size() > 0:
 		$KinematicBody2D/CollisionShape2D.set_deferred("disabled", true)
 		$Sprite.texture = activeSprite

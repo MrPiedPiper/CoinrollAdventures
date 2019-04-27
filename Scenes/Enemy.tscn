@@ -1,0 +1,40 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Assets/Scripts/Enemy.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Sprites/EnemySprites/Enemy.png" type="Texture" id=2]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 6, 5.5 )
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 6, 2 )
+
+[node name="Enemy" type="KinematicBody2D"]
+scale = Vector2( 5, 5 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="Sprite" type="Sprite" parent="."]
+texture = ExtResource( 2 )
+
+[node name="BaseHitbox" type="CollisionShape2D" parent="."]
+position = Vector2( 0, 2.5 )
+shape = SubResource( 1 )
+
+[node name="KinematicBody2D" type="KinematicBody2D" parent="."]
+collision_layer = 3
+collision_mask = 262147
+
+[node name="CoinHitbox" type="CollisionShape2D" parent="KinematicBody2D"]
+position = Vector2( 0, -5 )
+scale = Vector2( 1, 1 )
+shape = SubResource( 2 )
+disabled = true
+one_way_collision = true
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
+enabled = true
+collision_mask = 786432
+
