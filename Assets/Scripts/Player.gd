@@ -12,6 +12,7 @@ var coinStatModifier = 0.07
 var maxCoins = 6
 var bulletCooldown = 0.3
 var pickupCooldown = 0.2
+var aim_dir = Vector2(0, 0)
 
 var canShoot = true
 var canPickup = true
@@ -27,6 +28,7 @@ func _ready():
 	randomize()
 
 func _process(delta):
+	set_aim_dir()
 	rotatePlayerByMovement()
 
 func _physics_process(delta):
@@ -54,7 +56,6 @@ func movePlayer(inputVelocity, inputDelta):
 	newVel = walk(newVel, inputDelta)
 	#Script for jumping
 	newVel = jump(newVel, inputDelta)
-	print(newVel.x)
 	return newVel
 
 #Script for horizontal movement returns modified Vector2
@@ -94,12 +95,15 @@ func shoot():
 		var newBullet = bullet.instance()
 		get_tree().get_root().get_child(0).get_node("ActiveBullets").add_child(newBullet)
 		newBullet.global_position = $RotationNode/BulletSpawn.global_position
-		var shootDir
+		var shootDir = aim_dir
 		if $RotationNode.scale.x > 0:
-			shootDir = 1
+			if shootDir == Vector2(0, 0):
+				shootDir.x = 1
 		else:
-			shootDir = -1
-		newBullet.linear_velocity = Vector2(shootVel * shootDir, 0)
+			if shootDir == Vector2(0, 0):
+				shootDir.x = -1
+		newBullet.linear_velocity = Vector2(shootVel, 0)
+		newBullet.linear_velocity = newBullet.linear_velocity.rotated(shootDir.normalized().angle())
 		canShoot = false
 		heldCoins -= 1
 		yield(get_tree().create_timer(bulletCooldown), "timeout")
@@ -140,7 +144,17 @@ func _on_PlayerArea2D_area_exited(area):
 func get_modified_stat(inputStat):
 	return (inputStat + (inputStat * (coinStatModifier * (maxCoins - heldCoins))))
 
-
+func set_aim_dir():
+	var newDir = Vector2()
+	if Input.is_action_pressed("ui_up"):
+		newDir.y -= 1
+	if Input.is_action_pressed("ui_right"):
+		newDir.x += 1
+	if Input.is_action_pressed("ui_down"):
+		newDir.y += 1
+	if Input.is_action_pressed("ui_left"):
+		newDir.x -= 1
+	aim_dir = newDir
 
 
 
