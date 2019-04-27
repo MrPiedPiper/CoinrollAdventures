@@ -3,7 +3,7 @@ extends KinematicBody2D
 export var acceleration = 700
 export var topSpeed = 150
 export var jumpPower = -13000
-export var shootVel = 15
+export var shootVel = 200
 export var gravity = 300
 export var bullet : PackedScene
 
@@ -80,11 +80,11 @@ func shoot():
 		get_tree().get_root().get_child(0).get_node("ActiveBullets").add_child(newBullet)
 		newBullet.global_position = $RotationNode/BulletSpawn.global_position
 		var shootDir
-		if self.scale.x > 0:
+		if $RotationNode.scale.x > 0:
 			shootDir = 1
 		else:
 			shootDir = -1
-		newBullet.linear_velocity = Vector2(shootVel * shootVel, 0)
+		newBullet.linear_velocity = Vector2(shootVel * shootDir, 0)
 		canShoot = false
 		yield(get_tree().create_timer(bulletCooldown), "timeout")
 		canShoot = true
