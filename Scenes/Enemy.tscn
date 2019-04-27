@@ -29,12 +29,10 @@ collision_mask = 262147
 
 [node name="CoinHitbox" type="CollisionShape2D" parent="KinematicBody2D"]
 position = Vector2( 0, -5 )
-scale = Vector2( 1, 1 )
 shape = SubResource( 2 )
 disabled = true
 one_way_collision = true
 
 [node name="RayCast2D" type="RayCast2D" parent="."]
 enabled = true
-collision_mask = 786432
-
+collision_mask = 786434
