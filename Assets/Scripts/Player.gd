@@ -8,14 +8,24 @@ export var gravity = 300
 export var bullet : PackedScene
 
 var bulletCooldown = 0.3
+var pickupCooldown = 0.3
+
 var canShoot = true
+var canPickup = true
+
+var touchingCoins = []
+
 var frictionAmount = 0.2
 
 var velocity : Vector2
 
 var up = Vector2(0, -1)
 
+func _ready():
+	randomize()
+
 func _process(delta):
+	print(touchingCoins)
 	rotatePlayerByMovement()
 
 func _physics_process(delta):
@@ -27,6 +37,8 @@ func _physics_process(delta):
 	velocity = move_and_slide(velocity, up)
 	#Call the shoot function
 	shoot()
+	#Call the pickup function
+	pickup()
 
 func rotatePlayerByMovement():
 	if Input.is_action_pressed("ui_right"):
@@ -88,6 +100,37 @@ func shoot():
 		canShoot = false
 		yield(get_tree().create_timer(bulletCooldown), "timeout")
 		canShoot = true
+
+func pickup():
+	if Input.is_action_pressed("player_pickup") and canPickup and touchingCoins.size() > 0:
+		var selectedCoin
+		for i in range(0, touchingCoins.size()):
+			if i == 0:
+				selectedCoin = touchingCoins[i]
+			else:
+				var currYDiff = abs(self.position.y - touchingCoins[i].position.y)
+				var newYDiff = abs(self.position.y - selectedCoin.position.y)
+				if currYDiff < newYDiff:
+					selectedCoin = touchingCoins[i]
+				elif currYDiff == newYDiff:
+					var currXDiff = abs(self.position.x - touchingCoins[i].position.x)
+					var newXDiff = abs(self.position.x - selectedCoin.position.x)
+					if currXDiff < newXDiff:
+						selectedCoin = touchingCoins[i]
+					
+		touchingCoins.erase(selectedCoin)
+		selectedCoin.queue_free()
+		canPickup = false
+		yield(get_tree().create_timer(bulletCooldown), "timeout")
+		canPickup = true
+
+func _on_PlayerArea2D_area_entered(area):
+	if area.is_in_group("CoinDown"):
+		touchingCoins.append(area.get_parent())
+
+func _on_PlayerArea2D_area_exited(area):
+	if area.is_in_group("CoinDown"):
+		touchingCoins.erase(area.get_parent())
 
 
 

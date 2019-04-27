@@ -20,7 +20,7 @@ position = Vector2( 384.157, 54.476 )
 [node name="ActiveBullets" type="Node2D" parent="."]
 
 [node name="CoinDown" parent="." instance=ExtResource( 4 )]
-position = Vector2( 274.092, 136.463 )
+position = Vector2( 80, 350 )
 
 [node name="InactiveBullets" type="Node2D" parent="."]
 

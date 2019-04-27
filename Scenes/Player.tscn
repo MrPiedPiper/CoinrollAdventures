@@ -16,7 +16,9 @@ extents = Vector2( 3, 2 )
 [sub_resource type="RectangleShape2D" id=4]
 extents = Vector2( 5, 3.5 )
 
-[node name="Player" type="KinematicBody2D"]
+[node name="Player" type="KinematicBody2D" groups=[
+"Player",
+]]
 scale = Vector2( 5, 5 )
 collision_layer = 2
 collision_mask = 2
@@ -27,40 +29,34 @@ __meta__ = {
 
 [node name="PhysicalBox1" type="CollisionShape2D" parent="."]
 position = Vector2( -3, 4 )
-scale = Vector2( 1, 1 )
 shape = SubResource( 1 )
 
 [node name="PhysicalBox2" type="CollisionShape2D" parent="."]
 position = Vector2( 0, 2 )
-scale = Vector2( 1, 1 )
 shape = SubResource( 2 )
 
 [node name="PhysicalBox3" type="CollisionShape2D" parent="."]
 position = Vector2( 0, 4 )
-scale = Vector2( 1, 1 )
 shape = SubResource( 3 )
 
 [node name="PhysicalBox4" type="CollisionShape2D" parent="."]
 position = Vector2( 3, 4 )
-scale = Vector2( 1, 1 )
 shape = SubResource( 1 )
 
 [node name="PhysicalBox5" type="CollisionShape2D" parent="."]
 position = Vector2( 0, -3.5 )
-scale = Vector2( 1, 1 )
 shape = SubResource( 4 )
 
 [node name="RotationNode" type="Node2D" parent="."]
-scale = Vector2( 1, 1 )
 
 [node name="PlayerSprite" type="Sprite" parent="RotationNode"]
 position = Vector2( 0, -2 )
-scale = Vector2( 1, 1 )
 texture = ExtResource( 2 )
 
-[node name="PlayerArea2D" type="Area2D" parent="RotationNode"]
-editor/display_folded = true
-scale = Vector2( 1, 1 )
+[node name="PlayerArea2D" type="Area2D" parent="RotationNode" groups=[
+"Player",
+]]
+scale = Vector2( 1.1, 1.1 )
 collision_layer = 2
 collision_mask = 2
 
@@ -85,12 +81,12 @@ position = Vector2( 3, 4 )
 shape = SubResource( 1 )
 
 [node name="ActiveBullets" type="Node2D" parent="RotationNode"]
-scale = Vector2( 1, 1 )
 
 [node name="BulletSpawn" type="Node2D" parent="RotationNode"]
-scale = Vector2( 1, 1 )
 
 [node name="Camera2D" type="Camera2D" parent="."]
 current = true
 smoothing_enabled = true
 
+[connection signal="area_entered" from="RotationNode/PlayerArea2D" to="." method="_on_PlayerArea2D_area_entered"]
+[connection signal="area_exited" from="RotationNode/PlayerArea2D" to="." method="_on_PlayerArea2D_area_exited"]

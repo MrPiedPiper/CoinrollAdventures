@@ -6,7 +6,9 @@
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 4, 2 )
 
-[node name="CoinDown" type="KinematicBody2D"]
+[node name="CoinDown" type="KinematicBody2D" groups=[
+"CoinDown",
+]]
 scale = Vector2( 5, 5 )
 collision_layer = 3
 collision_mask = 3
@@ -16,5 +18,15 @@ script = ExtResource( 1 )
 texture = ExtResource( 2 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource( 1 )
+
+[node name="Area2D" type="Area2D" parent="." groups=[
+"CoinDown",
+]]
+scale = Vector2( 1, 1 )
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource( 1 )
 
