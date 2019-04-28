@@ -29,7 +29,7 @@ func bounce():
 	for i in range(0, touching.size()):
 		if touching[i].is_in_group("Player"):
 			var currObject = touching[i].get_parent().get_parent() 
-			connect("launch", currObject, "_launch", [rotation + PI/4, launchPower])
+			connect("launch", currObject, "_launch", [rotation + PI/2, launchPower])
 			emit_signal("launch")
 
 func _on_Area2D_area_entered(area):

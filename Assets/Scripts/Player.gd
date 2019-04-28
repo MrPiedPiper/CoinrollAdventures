@@ -28,6 +28,7 @@ onready var headCollider6 = $Head6
 var coinStatModifier = 0.07
 
 var currCheckpoint
+var touchingCheckpoint = false
 
 var maxCoins = 6
 var bulletCooldown = 0.3
@@ -53,6 +54,7 @@ func _process(delta):
 	set_aim_dir()
 	rotatePlayerByMovement()
 	steal_coin()
+	check_respawn()
 
 func _physics_process(delta):
 	#Add in Gravity
@@ -79,6 +81,7 @@ func movePlayer(inputVelocity, inputDelta):
 	newVel = walk(newVel, inputDelta)
 	#Script for jumping
 	newVel = jump(newVel, inputDelta)
+	
 	return newVel
 
 #Script for horizontal movement returns modified Vector2
@@ -100,6 +103,8 @@ func walk(inputVelocity, inputDelta):
 		hasFriction = false
 	if hasFriction:
 		newVel.x = lerp(newVel.x, 0, frictionAmount)
+	elif !$Sounds/WalkSound.playing and is_on_floor():
+		$Sounds/WalkSound.play(0)
 	var modifiedTopSpeed = get_modified_stat(topSpeed)
 	newVel.x = clamp(newVel.x, -modifiedTopSpeed, modifiedTopSpeed)
 	return newVel
@@ -110,6 +115,7 @@ func jump(inputVelocity, inputDelta):
 		return inputVelocity
 	var newVel = inputVelocity
 	if Input.is_action_pressed("move_jump"):
+		$Sounds/JumpSound.play(0)
 		newVel.y = get_modified_stat(jumpPower) * inputDelta
 	return newVel
 
@@ -129,6 +135,7 @@ func shoot():
 		newBullet.linear_velocity = newBullet.linear_velocity.rotated(shootDir.normalized().angle())
 		canShoot = false
 		setCoinCount(heldCoins-1)
+		$Sounds/ShootSound.play(0)
 		yield(get_tree().create_timer(bulletCooldown), "timeout")
 		canShoot = true
 
@@ -153,6 +160,7 @@ func pickup():
 		selectedCoin.queue_free()
 		canPickup = false
 		setCoinCount(heldCoins + 1)
+		$Sounds/PickupSound.play(0)
 		yield(get_tree().create_timer(bulletCooldown), "timeout")
 		canPickup = true
 
@@ -160,17 +168,20 @@ func _on_PlayerArea2D_area_entered(area):
 	if area.is_in_group("CoinDown"):
 		touchingCoins.append(area.get_parent())
 	elif area.is_in_group("Checkpoint"):
-		if currCheckpoint != null:
+		if currCheckpoint != null and currCheckpoint != area:
 			connect("checkpoint_deactivated", currCheckpoint, "_checkpoint_deactivated", [], CONNECT_ONESHOT)
 			emit_signal("checkpoint_deactivated")
 		connect("checkpoint_activated", area.get_parent(), "_checkpoint_activated", [], CONNECT_ONESHOT)
 		emit_signal("checkpoint_activated")
 		currCheckpoint = area.get_parent()
+		touchingCheckpoint = true
 	touching.append(area)
 
 func _on_PlayerArea2D_area_exited(area):
 	if area.is_in_group("CoinDown"):
 		touchingCoins.erase(area.get_parent())
+	elif area.is_in_group("Checkpoint"):
+		touchingCheckpoint = false
 	touching.erase(area)
 
 func get_modified_stat(inputStat):
@@ -295,4 +306,6 @@ func process_head():
 		headCollider5.set_deferred("disabled", true)
 		headCollider6.set_deferred("disabled", true)
 
-
+func check_respawn():
+	if Input.is_action_just_pressed("player_respawn") and currCheckpoint != null:
+		respawn()

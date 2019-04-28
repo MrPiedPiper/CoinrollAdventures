@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Assets/Scripts/Enemy.gd" type="Script" id=1]
 [ext_resource path="res://Assets/Sprites/EnemySprites/Enemy.png" type="Texture" id=2]
@@ -9,6 +9,9 @@ extents = Vector2( 6, 5.5 )
 
 [sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 4, 2 )
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 6, 8 )
 
 [node name="Enemy" type="KinematicBody2D" groups=[
 "Enemy",
@@ -25,13 +28,10 @@ __meta__ = {
 [node name="BaseHitbox" type="CollisionShape2D" parent="."]
 position = Vector2( 0, 2.5 )
 shape = SubResource( 1 )
-__meta__ = {
-"_edit_lock_": true
-}
 
 [node name="KinematicBody2D" type="KinematicBody2D" parent="."]
-collision_layer = 3
-collision_mask = 262147
+collision_layer = 524289
+collision_mask = 524291
 
 [node name="CoinHitbox" type="CollisionShape2D" parent="KinematicBody2D"]
 position = Vector2( 0, -5 )
@@ -56,12 +56,11 @@ __meta__ = {
 ]]
 collision_mask = 3
 __meta__ = {
-"_edit_group_": true,
 "_edit_lock_": true
 }
 
 [node name="BaseHitbox2" type="CollisionShape2D" parent="EnemyArea2D"]
-position = Vector2( 0, 2.5 )
-shape = SubResource( 1 )
+position = Vector2( 0, -2.98023e-008 )
+shape = SubResource( 3 )
 [connection signal="area_entered" from="EnemyArea2D" to="." method="_on_EnemyArea2D_area_entered"]
 [connection signal="area_exited" from="EnemyArea2D" to="." method="_on_EnemyArea2D_area_exited"]
