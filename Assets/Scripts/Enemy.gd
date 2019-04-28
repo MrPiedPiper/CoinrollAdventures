@@ -32,13 +32,13 @@ func cycleRay():
 	if isCyclingRay:
 		return
 	var coins = get_tree().get_root().get_child(0).get_node("InactiveBullets").get_children()
-	coins.append(get_tree().get_root().get_child(0).get_node("Player"))
+	coins.append(get_tree().get_nodes_in_group("Player")[0])
 	coins.sort_custom(self, "closest_coin_sort")
 	isCyclingRay = true
 	var collisions = []
 	for i in range(0, coins.size()):
-		var currObject = weakref(coins[i])
-		if currObject.get_ref():
+		var currObject = coins[i]
+		if currObject != null:
 			var angle = get_angle_to(coins[i].position)
 			$RayCast2D.rotation = angle - PI/2
 			var collision = $RayCast2D

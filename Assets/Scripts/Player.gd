@@ -3,6 +3,7 @@ extends KinematicBody2D
 signal player_stole_coin
 signal checkpoint_activated
 signal checkpoint_deactivated
+signal door_activated
 
 export var acceleration = 700
 export var topSpeed = 150
@@ -29,6 +30,7 @@ var coinStatModifier = 0.07
 
 var currCheckpoint
 var touchingCheckpoint = false
+var touchingDoor = false
 
 var maxCoins = 6
 var bulletCooldown = 0.3
@@ -53,8 +55,11 @@ func _ready():
 func _process(delta):
 	set_aim_dir()
 	rotatePlayerByMovement()
+	#Call the pickup function
+	pickup()
 	steal_coin()
 	check_respawn()
+	check_door()
 
 func _physics_process(delta):
 	#Add in Gravity
@@ -65,8 +70,6 @@ func _physics_process(delta):
 	velocity = move_and_slide(velocity, up)
 	#Call the shoot function
 	shoot()
-	#Call the pickup function
-	pickup()
 
 func rotatePlayerByMovement():
 	if Input.is_action_pressed("ui_right"):
@@ -143,26 +146,28 @@ func pickup():
 	if Input.is_action_pressed("player_pickup") and canPickup and touchingCoins.size() > 0 and heldCoins < maxCoins:
 		var selectedCoin
 		for i in range(0, touchingCoins.size()):
-			if i == 0:
-				selectedCoin = touchingCoins[i]
-			else:
-				var currYDiff = abs(self.position.y - touchingCoins[i].position.y)
-				var newYDiff = abs(self.position.y - selectedCoin.position.y)
-				if currYDiff < newYDiff:
+			if touchingCoins[i] != null:
+				if i == 0:
 					selectedCoin = touchingCoins[i]
-				elif currYDiff == newYDiff:
-					var currXDiff = abs(self.position.x - touchingCoins[i].position.x)
-					var newXDiff = abs(self.position.x - selectedCoin.position.x)
-					if currXDiff < newXDiff:
+				elif selectedCoin != null:
+					var currYDiff = abs(self.position.y - touchingCoins[i].position.y)
+					var newYDiff = abs(self.position.y - selectedCoin.position.y)
+					if currYDiff < newYDiff:
 						selectedCoin = touchingCoins[i]
-					
-		touchingCoins.erase(selectedCoin)
-		selectedCoin.queue_free()
-		canPickup = false
-		setCoinCount(heldCoins + 1)
-		$Sounds/PickupSound.play(0)
-		yield(get_tree().create_timer(bulletCooldown), "timeout")
-		canPickup = true
+					elif currYDiff == newYDiff:
+						var currXDiff = abs(self.position.x - touchingCoins[i].position.x)
+						var newXDiff = abs(self.position.x - selectedCoin.position.x)
+						if currXDiff < newXDiff:
+							selectedCoin = touchingCoins[i]
+		
+		if selectedCoin != null:
+			touchingCoins.erase(selectedCoin)
+			selectedCoin.queue_free()
+			canPickup = false
+			setCoinCount(heldCoins + 1)
+			$Sounds/PickupSound.play(0)
+			yield(get_tree().create_timer(bulletCooldown), "timeout")
+			canPickup = true
 
 func _on_PlayerArea2D_area_entered(area):
 	if area.is_in_group("CoinDown"):
@@ -175,13 +180,17 @@ func _on_PlayerArea2D_area_entered(area):
 		emit_signal("checkpoint_activated")
 		currCheckpoint = area.get_parent()
 		touchingCheckpoint = true
+	elif area.is_in_group("DoorArea"):
+		touchingDoor = true
 	touching.append(area)
-
+	
 func _on_PlayerArea2D_area_exited(area):
 	if area.is_in_group("CoinDown"):
 		touchingCoins.erase(area.get_parent())
 	elif area.is_in_group("Checkpoint"):
 		touchingCheckpoint = false
+	elif area.is_in_group("DoorArea"):
+		touchingDoor = false
 	touching.erase(area)
 
 func get_modified_stat(inputStat):
@@ -215,14 +224,20 @@ func die():
 		enemy.respawn()
 
 func steal_coin():
-	if Input.is_action_pressed("player_pickup"):
+	if Input.is_action_pressed("player_pickup") and canPickup:
 		for i in range(0, touching.size()):
-			var currObject = touching[i].get_parent()
-			if currObject.is_in_group("Enemy") and currObject.get_has_coin():
-				if heldCoins < maxCoins:
-					connect("player_stole_coin", currObject, "_player_stole_coin")
-					emit_signal("player_stole_coin")
-					setCoinCount(heldCoins+1)
+			if touching[i] != null:
+				var currObject = touching[i].get_parent()
+				if currObject.is_in_group("Enemy") and currObject.get_has_coin():
+					if heldCoins < maxCoins:
+						connect("player_stole_coin", currObject, "_player_stole_coin")
+						emit_signal("player_stole_coin")
+						setCoinCount(heldCoins+1)
+						canPickup = false
+						$Sounds/PickupSound.play(0)
+						yield(get_tree().create_timer(bulletCooldown), "timeout")
+						canPickup = true
+						return
 
 func _launch(rot, power):
 	var launchDir = Vector2(cos(rot), sin(rot))
@@ -237,6 +252,10 @@ func respawn():
 	var inactive_bullets = get_tree().get_root().get_child(0).get_node("InactiveBullets").get_children()
 	for i in range(0, inactive_bullets.size()):
 		inactive_bullets[i].queue_free()
+	
+	var enemies = get_tree().get_root().get_child(0).get_node("Enemies").get_children()
+	for i in range(0, enemies.size()):
+		enemies[i].respawn()
 	
 	velocity = Vector2(0, 0)
 	canShoot = true
@@ -309,3 +328,25 @@ func process_head():
 func check_respawn():
 	if Input.is_action_just_pressed("player_respawn") and currCheckpoint != null:
 		respawn()
+
+func check_door():
+	if touchingDoor and Input.is_action_just_pressed("ui_up"):
+		emit_signal("door_activated")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
