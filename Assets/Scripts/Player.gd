@@ -1,6 +1,8 @@
 extends KinematicBody2D
 
 signal player_stole_coin
+signal checkpoint_activated
+signal checkpoint_deactivated
 
 export var acceleration = 700
 export var topSpeed = 150
@@ -10,6 +12,8 @@ export var gravity = 300
 export var bullet : PackedScene
 
 var coinStatModifier = 0.07
+
+var currCheckpoint
 
 var maxCoins = 6
 var bulletCooldown = 0.3
@@ -141,6 +145,13 @@ func pickup():
 func _on_PlayerArea2D_area_entered(area):
 	if area.is_in_group("CoinDown"):
 		touchingCoins.append(area.get_parent())
+	elif area.is_in_group("Checkpoint"):
+		if currCheckpoint != null:
+			connect("checkpoint_deactivated", currCheckpoint, "_checkpoint_deactivated", [], CONNECT_ONESHOT)
+			emit_signal("checkpoint_deactivated")
+		connect("checkpoint_activated", area.get_parent(), "_checkpoint_activated", [], CONNECT_ONESHOT)
+		emit_signal("checkpoint_activated")
+		currCheckpoint = area.get_parent()
 	touching.append(area)
 
 func _on_PlayerArea2D_area_exited(area):
@@ -172,7 +183,9 @@ func setCoinCount(newValue):
 		die()
 
 func die():
-	print("bleh")
+	respawn()
+	for enemy in get_tree().get_nodes_in_group("Enemy"):
+		enemy.respawn()
 
 func steal_coin():
 	if Input.is_action_pressed("player_pickup"):
@@ -184,8 +197,27 @@ func steal_coin():
 					emit_signal("player_stole_coin")
 					setCoinCount(heldCoins+1)
 
+func _launch(rot, power):
+	var launchDir = Vector2(cos(rot), sin(rot))
+	velocity += launchDir * power
+	velocity = move_and_slide(velocity)
 
-
+func respawn():
+	var active_bullets = get_tree().get_root().get_child(0).get_node("ActiveBullets").get_children()
+	for i in range(0, active_bullets.size()):
+		active_bullets[i].queue_free()
+	
+	var inactive_bullets = get_tree().get_root().get_child(0).get_node("InactiveBullets").get_children()
+	for i in range(0, inactive_bullets.size()):
+		inactive_bullets[i].queue_free()
+	
+	velocity = Vector2(0, 0)
+	canShoot = true
+	canPickup = true
+	touching = []
+	touchingCoins = []
+	heldCoins = maxCoins
+	position = currCheckpoint.position
 
 
 

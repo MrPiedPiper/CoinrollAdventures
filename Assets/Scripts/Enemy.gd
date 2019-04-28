@@ -6,6 +6,9 @@ export var hasCoin = false
 export var acceleration = 100
 export var topSpeed = 35
 
+var og_has_coin = hasCoin
+onready var og_position = self.position
+
 var stunned = false
 var stun_time : float = 1
 
@@ -15,12 +18,6 @@ var curr_target
 var isCyclingRay = false
 
 var touching = []
-
-#If the Enemy sees the player within range and doesn't ahve a coin, have the Enemy run towards the plyaer
-
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
 
 func _process(delta):
 	if !hasCoin and !stunned:
@@ -106,6 +103,36 @@ func _player_stole_coin():
 	stunned = true
 	yield(get_tree().create_timer(stun_time), "timeout")
 	stunned = false
+
+func respawn():
+	set_has_coin(og_has_coin)
+	position = og_position
+	velocity = Vector2(0, 0)
+	stunned = false
+	isCyclingRay = false
+	touching = []
+	curr_target = null
+	print(hasCoin)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
