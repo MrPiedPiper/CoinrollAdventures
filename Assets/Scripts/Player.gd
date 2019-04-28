@@ -32,6 +32,8 @@ var currCheckpoint
 var touchingCheckpoint = false
 var touchingDoor = false
 
+onready var spawn_pos = self.position
+
 var maxCoins = 6
 var bulletCooldown = 0.3
 var pickupCooldown = 0.2
@@ -182,6 +184,8 @@ func _on_PlayerArea2D_area_entered(area):
 		touchingCheckpoint = true
 	elif area.is_in_group("DoorArea"):
 		touchingDoor = true
+	elif area.is_in_group("WaterArea"):
+		die()
 	touching.append(area)
 	
 func _on_PlayerArea2D_area_exited(area):
@@ -218,7 +222,6 @@ func setCoinCount(newValue):
 		die()
 
 func die():
-	yield(get_tree().create_timer(2),"timeout")
 	respawn()
 	for enemy in get_tree().get_nodes_in_group("Enemy"):
 		enemy.respawn()
@@ -253,7 +256,7 @@ func respawn():
 	for i in range(0, inactive_bullets.size()):
 		inactive_bullets[i].queue_free()
 	
-	var enemies = get_tree().get_root().get_child(0).get_node("Enemies").get_children()
+	var enemies = get_tree().get_nodes_in_group("Enemy")
 	for i in range(0, enemies.size()):
 		enemies[i].respawn()
 	
@@ -263,7 +266,10 @@ func respawn():
 	touching = []
 	touchingCoins = []
 	heldCoins = maxCoins
-	position = currCheckpoint.position
+	if currCheckpoint == null:
+		position = spawn_pos
+	else:
+		position = currCheckpoint.position
 	process_head()
 
 func process_head():

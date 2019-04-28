@@ -3,23 +3,23 @@
 [ext_resource path="res://Assets/Tiles/Water/anim_water.tres" type="Texture" id=1]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 4, 4 )
+extents = Vector2( 2, 2 )
 
-[node name="TextureRect" type="TextureRect" groups=[
+[node name="Water" type="Sprite" groups=[
 "Water",
 ]]
-margin_left = -20.0
-margin_top = -20.0
-margin_right = -12.0
-margin_bottom = -12.0
-rect_scale = Vector2( 5, 5 )
+scale = Vector2( 5, 5 )
 texture = ExtResource( 1 )
-stretch_mode = 2
+region_enabled = true
+region_rect = Rect2( 0, 0, 8, 8 )
+__meta__ = {
+"_edit_group_": true
+}
 
 [node name="Area2D" type="Area2D" parent="." groups=[
 "WaterArea",
 ]]
+collision_mask = 524291
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-position = Vector2( 4, 4 )
 shape = SubResource( 1 )
