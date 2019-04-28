@@ -11,6 +11,20 @@ export var shootVel = 200
 export var gravity = 300
 export var bullet : PackedScene
 
+onready var head1 = preload("res://Assets/Sprites/PlayerSprites/Head/Head1.png")
+onready var head2 = preload("res://Assets/Sprites/PlayerSprites/Head/Head2.png")
+onready var head3 = preload("res://Assets/Sprites/PlayerSprites/Head/Head3.png")
+onready var head4 = preload("res://Assets/Sprites/PlayerSprites/Head/Head4.png")
+onready var head5 = preload("res://Assets/Sprites/PlayerSprites/Head/Head5.png")
+onready var head6 = preload("res://Assets/Sprites/PlayerSprites/Head/Head6.png")
+
+onready var headCollider1 = $Head1
+onready var headCollider2 = $Head2
+onready var headCollider3 = $Head3
+onready var headCollider4 = $Head4
+onready var headCollider5 = $Head5
+onready var headCollider6 = $Head6
+
 var coinStatModifier = 0.07
 
 var currCheckpoint
@@ -114,7 +128,7 @@ func shoot():
 		newBullet.linear_velocity = Vector2(shootVel, 0)
 		newBullet.linear_velocity = newBullet.linear_velocity.rotated(shootDir.normalized().angle())
 		canShoot = false
-		heldCoins -= 1
+		setCoinCount(heldCoins-1)
 		yield(get_tree().create_timer(bulletCooldown), "timeout")
 		canShoot = true
 
@@ -138,7 +152,7 @@ func pickup():
 		touchingCoins.erase(selectedCoin)
 		selectedCoin.queue_free()
 		canPickup = false
-		heldCoins += 1
+		setCoinCount(heldCoins + 1)
 		yield(get_tree().create_timer(bulletCooldown), "timeout")
 		canPickup = true
 
@@ -179,10 +193,12 @@ func _enemy_stole_coin():
 
 func setCoinCount(newValue):
 	heldCoins = newValue
+	process_head()
 	if heldCoins < 1:
 		die()
 
 func die():
+	yield(get_tree().create_timer(2),"timeout")
 	respawn()
 	for enemy in get_tree().get_nodes_in_group("Enemy"):
 		enemy.respawn()
@@ -218,8 +234,65 @@ func respawn():
 	touchingCoins = []
 	heldCoins = maxCoins
 	position = currCheckpoint.position
+	process_head()
 
-
-
+func process_head():
+	if heldCoins == 1:
+		print(headCollider1.name)
+		$RotationNode/PlayerHeadSprite.texture = head6
+		headCollider1.set_deferred("disabled", false)
+		headCollider2.set_deferred("disabled", true)
+		headCollider3.set_deferred("disabled", true)
+		headCollider4.set_deferred("disabled", true)
+		headCollider5.set_deferred("disabled", true)
+		headCollider6.set_deferred("disabled", true)
+	elif heldCoins == 2:
+		$RotationNode/PlayerHeadSprite.texture = head5
+		headCollider1.set_deferred("disabled", true)
+		headCollider2.set_deferred("disabled", false)
+		headCollider3.set_deferred("disabled", true)
+		headCollider4.set_deferred("disabled", true)
+		headCollider5.set_deferred("disabled", true)
+		headCollider6.set_deferred("disabled", true)
+	elif heldCoins == 3:
+		$RotationNode/PlayerHeadSprite.texture = head4
+		headCollider1.set_deferred("disabled", true)
+		headCollider2.set_deferred("disabled", true)
+		headCollider3.set_deferred("disabled", false)
+		headCollider4.set_deferred("disabled", true)
+		headCollider5.set_deferred("disabled", true)
+		headCollider6.set_deferred("disabled", true)
+	elif heldCoins == 4:
+		$RotationNode/PlayerHeadSprite.texture = head3
+		headCollider1.set_deferred("disabled", true)
+		headCollider2.set_deferred("disabled", true)
+		headCollider3.set_deferred("disabled", true)
+		headCollider4.set_deferred("disabled", false)
+		headCollider5.set_deferred("disabled", true)
+		headCollider6.set_deferred("disabled", true)
+	elif heldCoins == 5:
+		$RotationNode/PlayerHeadSprite.texture = head2
+		headCollider1.set_deferred("disabled", true)
+		headCollider2.set_deferred("disabled", true)
+		headCollider3.set_deferred("disabled", true)
+		headCollider4.set_deferred("disabled", true)
+		headCollider5.set_deferred("disabled", false)
+		headCollider6.set_deferred("disabled", true)
+	elif heldCoins == 6:
+		$RotationNode/PlayerHeadSprite.texture = head1
+		headCollider1.set_deferred("disabled", true)
+		headCollider2.set_deferred("disabled", true)
+		headCollider3.set_deferred("disabled", true)
+		headCollider4.set_deferred("disabled", true)
+		headCollider5.set_deferred("disabled", true)
+		headCollider6.set_deferred("disabled", false)
+	else :
+		$RotationNode/PlayerHeadSprite.texture = null
+		headCollider1.set_deferred("disabled", true)
+		headCollider2.set_deferred("disabled", true)
+		headCollider3.set_deferred("disabled", true)
+		headCollider4.set_deferred("disabled", true)
+		headCollider5.set_deferred("disabled", true)
+		headCollider6.set_deferred("disabled", true)
 
 

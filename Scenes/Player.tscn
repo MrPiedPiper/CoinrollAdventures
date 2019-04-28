@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://Assets/Scripts/Player.gd" type="Script" id=1]
 [ext_resource path="res://Assets/Sprites/PlayerSprites/Head/Head1.png" type="Texture" id=2]
@@ -17,6 +17,21 @@ extents = Vector2( 3, 2 )
 [sub_resource type="RectangleShape2D" id=4]
 extents = Vector2( 5, 4 )
 
+[sub_resource type="RectangleShape2D" id=5]
+extents = Vector2( 5, 3.5 )
+
+[sub_resource type="RectangleShape2D" id=6]
+extents = Vector2( 5, 3 )
+
+[sub_resource type="RectangleShape2D" id=7]
+extents = Vector2( 5, 2.5 )
+
+[sub_resource type="RectangleShape2D" id=8]
+extents = Vector2( 5, 2 )
+
+[sub_resource type="RectangleShape2D" id=9]
+extents = Vector2( 5, 1.5 )
+
 [node name="Player" type="KinematicBody2D" groups=[
 "Player",
 ]]
@@ -24,9 +39,6 @@ scale = Vector2( 5, 5 )
 collision_layer = 2
 collision_mask = 2
 script = ExtResource( 1 )
-__meta__ = {
-"_edit_group_": true
-}
 
 [node name="PhysicalBox1" type="CollisionShape2D" parent="."]
 position = Vector2( -3, 4 )
@@ -56,18 +68,48 @@ __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="PhysicalBox5" type="CollisionShape2D" parent="."]
-position = Vector2( 0, -4 )
+[node name="Head6" type="CollisionShape2D" parent="."]
+position = Vector2( 4.76837e-007, -4 )
+scale = Vector2( 1, 1 )
 shape = SubResource( 4 )
+disabled = true
+
+[node name="Head5" type="CollisionShape2D" parent="."]
+position = Vector2( 2.38419e-007, -3.5 )
+shape = SubResource( 5 )
+disabled = true
+
+[node name="Head4" type="CollisionShape2D" parent="."]
+position = Vector2( -4.76837e-007, -3 )
+shape = SubResource( 6 )
+disabled = true
+
+[node name="Head3" type="CollisionShape2D" parent="."]
+position = Vector2( 2.38419e-007, -2.5 )
+scale = Vector2( 1, 1 )
+shape = SubResource( 7 )
+disabled = true
+
+[node name="Head2" type="CollisionShape2D" parent="."]
+position = Vector2( 0, -2 )
+shape = SubResource( 8 )
+disabled = true
+
+[node name="Head1" type="CollisionShape2D" parent="."]
+position = Vector2( 0, -1.5 )
+shape = SubResource( 9 )
+disabled = true
 
 [node name="RotationNode" type="Node2D" parent="."]
 
 [node name="PlayerHeadSprite" type="Sprite" parent="RotationNode"]
+visible = false
 position = Vector2( 0, -4 )
 scale = Vector2( 1, 1 )
 texture = ExtResource( 2 )
 
 [node name="PlayerBodySprite" type="Sprite" parent="RotationNode"]
+visible = false
 position = Vector2( 0, 3 )
 texture = ExtResource( 3 )
 
