@@ -7,23 +7,27 @@ export var linkedObjectPath : NodePath
 var linkedObject
 var deactiveSprite : Texture = preload("res://Assets/Sprites/ButtonUp.png")
 var activeSprite : Texture = preload("res://Assets/Sprites/ButtonDown.png")
+var last_result = false
+var collision
 
 var collidingWith = []
 
 func _ready():
 	if linkedObjectPath != null:
 		var linkedObject = get_node(linkedObjectPath)
-		connect("button_activated", linkedObject, "_on_activated", [self])
-		connect("button_deactivated", linkedObject, "_on_deactivated", [self])
+		connect("button_activated", linkedObject, "_on_activated", [collidingWith])
+		connect("button_deactivated", linkedObject, "_on_deactivated", [collidingWith])
+		
 
-func _on_Area2D_area_entered(area):
-	emit_signal("button_activated")
-	collidingWith.append(area)
-	$Sprite.texture = activeSprite
+func _process(delta):
+	collision = $RayCast2D
+	if collision.is_colliding() != last_result:
+		if collision.get_collider() != null:
+			emit_signal("button_activated")
+			$Sprite.texture = activeSprite
+			last_result = true
+		else:
+			emit_signal("button_deactivated")
+			$Sprite.texture = deactiveSprite
+			last_result = false
 
-
-func _on_Area2D_area_exited(area):
-	collidingWith.erase(area)
-	if collidingWith.size()==0:
-		emit_signal("button_deactivated")
-		$Sprite.texture = deactiveSprite

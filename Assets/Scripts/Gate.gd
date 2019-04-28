@@ -7,10 +7,14 @@ var activeArray = []
 
 func _on_activated(_node):
 	activeArray.append(_node)
+	print(str(self.name," Activated"))
+	print(activeArray)
 	process_gate()
 	
 func _on_deactivated(_node):
 	activeArray.erase(_node)
+	print(str(self.name," Dectivated"))
+	print(activeArray)
 	process_gate()
 	
 func process_gate():
