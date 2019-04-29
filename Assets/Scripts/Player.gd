@@ -184,7 +184,7 @@ func pickup():
 			canPickup = true
 
 func _on_PlayerArea2D_area_entered(area):
-	if area.is_in_group("CoinDown"):
+	if area.is_in_group("CoinDown") or area.is_in_group("CoinPickupArea"):
 		touchingCoins.append(area.get_parent())
 	elif area.is_in_group("Checkpoint"):
 		if currCheckpoint != null and currCheckpoint != area:
@@ -201,7 +201,7 @@ func _on_PlayerArea2D_area_entered(area):
 	touching.append(area)
 	
 func _on_PlayerArea2D_area_exited(area):
-	if area.is_in_group("CoinDown"):
+	if area.is_in_group("CoinDown") or area.is_in_group("CoinPickupArea"):
 		touchingCoins.erase(area.get_parent())
 	elif area.is_in_group("Checkpoint"):
 		touchingCheckpoint = false

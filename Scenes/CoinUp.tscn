@@ -27,6 +27,17 @@ shape = SubResource( 1 )
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource( 1 )
+
+[node name="Area2D2" type="Area2D" parent="." groups=[
+"CoinPickupArea",
+]]
+collision_mask = 3
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Area2D2"]
+shape = SubResource( 1 )
 [connection signal="area_entered" from="Area2D" to="." method="_on_Area2D_area_entered"]
 [connection signal="area_exited" from="Area2D" to="." method="_on_Area2D_area_exited"]
 [connection signal="body_entered" from="Area2D" to="." method="_on_Area2D_body_entered"]
+[connection signal="area_entered" from="Area2D2" to="." method="_on_Area2D_area_entered"]
+[connection signal="area_exited" from="Area2D2" to="." method="_on_Area2D_area_exited"]
+[connection signal="body_entered" from="Area2D2" to="." method="_on_Area2D_body_entered"]
