@@ -3,8 +3,11 @@ extends KinematicBody2D
 signal enemy_stole_coin
 
 export var hasCoin = false
+var isChasing = false
 export var acceleration = 100
 export var topSpeed = 35
+
+onready var animator = $Body/AnimationPlayer
 
 var og_has_coin = hasCoin
 onready var og_position = self.position
@@ -20,6 +23,7 @@ var isCyclingRay = false
 var touching = []
 
 func _process(delta):
+	handle_animation()
 	if !hasCoin and !stunned:
 		cycleRay()
 		grab_coin()
@@ -61,11 +65,15 @@ func closest_coin_sort(a, b):
 
 func moveTowardsTarget(inputDelta):
 	if curr_target == null:
+		isChasing = false
 		return
+	isChasing = true
 	var newVel = velocity
 	if curr_target.x > position.x:
+		$Body.scale.x = abs($Body.scale.x)
 		newVel.x += acceleration * inputDelta
 	if curr_target.x < position.x:
+		$Body.scale.x = -abs($Body.scale.x)
 		newVel.x -= acceleration * inputDelta
 	velocity = move_and_slide(newVel)
 	
@@ -118,6 +126,16 @@ func respawn():
 	curr_target = null
 	print(hasCoin)
 
+func handle_animation():
+	if hasCoin:
+		animator.play("Happy")
+	elif stunned:
+		animator.play("Stun")
+	elif isChasing:
+		animator.play("Chase")
+	else:
+		animator.play("Idle")
+	pass
 
 
 
@@ -143,3 +161,10 @@ func respawn():
 
 
 
+
+func _on_EnemyArea2D2_area_entered(area):
+	pass # Replace with function body.
+
+
+func _on_EnemyArea2D2_area_exited(area):
+	pass # Replace with function body.

@@ -40,7 +40,7 @@ extents = Vector2( 5, 2 )
 [sub_resource type="RectangleShape2D" id=9]
 extents = Vector2( 5, 1.5 )
 
-[sub_resource type="Animation" id=14]
+[sub_resource type="Animation" id=10]
 resource_name = "Default"
 length = 0.8
 tracks/0/type = "value"
@@ -188,7 +188,7 @@ tracks/11/keys = {
 "values": [ 0.0 ]
 }
 
-[sub_resource type="Animation" id=12]
+[sub_resource type="Animation" id=11]
 resource_name = "Idle"
 length = 1.2
 loop = true
@@ -337,7 +337,7 @@ tracks/11/keys = {
 "values": [ 0.0, 0.0, 0.0, 0.0, 0.0 ]
 }
 
-[sub_resource type="Animation" id=13]
+[sub_resource type="Animation" id=12]
 resource_name = "Jump"
 tracks/0/type = "value"
 tracks/0/path = NodePath("SpriteHead:position")
@@ -484,7 +484,7 @@ tracks/11/keys = {
 "values": [ -45.0 ]
 }
 
-[sub_resource type="Animation" id=15]
+[sub_resource type="Animation" id=13]
 resource_name = "Walk"
 length = 0.8
 loop = true
@@ -720,10 +720,10 @@ disabled = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="RotationNode/Body"]
 root_node = NodePath("../SpriteBody")
-anims/Default = SubResource( 14 )
-anims/Idle = SubResource( 12 )
-anims/Jump = SubResource( 13 )
-anims/Walk = SubResource( 15 )
+anims/Default = SubResource( 10 )
+anims/Idle = SubResource( 11 )
+anims/Jump = SubResource( 12 )
+anims/Walk = SubResource( 13 )
 
 [node name="SpriteBody" type="Sprite" parent="RotationNode/Body"]
 position = Vector2( 4.76837e-007, 1 )

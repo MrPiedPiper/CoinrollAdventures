@@ -241,10 +241,10 @@ func steal_coin():
 	if Input.is_action_pressed("player_pickup") and canPickup:
 		for i in range(0, touching.size()):
 			if touching[i] != null:
-				var currObject = touching[i].get_parent()
-				if currObject.is_in_group("Enemy") and currObject.get_has_coin():
+				var currObject = touching[i]
+				if currObject.is_in_group("EnemyPickupArea") and currObject.get_parent().get_has_coin():
 					if heldCoins < maxCoins:
-						connect("player_stole_coin", currObject, "_player_stole_coin", [], CONNECT_ONESHOT)
+						connect("player_stole_coin", currObject.get_parent(), "_player_stole_coin", [], CONNECT_ONESHOT)
 						emit_signal("player_stole_coin")
 						setCoinCount(heldCoins+1)
 						canPickup = false

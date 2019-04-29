@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Leg2.png-7610711325bc20bb7674fe1952fc851f.stex"
+path="res://.import/HeadV5.png-1ee60f8e1cdc2c51ecc461810fe7ac8d.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Sprites/EnemySprites/Leg2.png"
-dest_files=[ "res://.import/Leg2.png-7610711325bc20bb7674fe1952fc851f.stex" ]
+source_file="res://Assets/Sprites/EnemySprites/HeadV5.png"
+dest_files=[ "res://.import/HeadV5.png-1ee60f8e1cdc2c51ecc461810fe7ac8d.stex" ]
 
 [params]
 
