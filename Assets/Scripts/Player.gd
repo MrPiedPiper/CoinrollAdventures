@@ -19,6 +19,10 @@ onready var head4 = preload("res://Assets/Sprites/PlayerSprites/Head/Head4.png")
 onready var head5 = preload("res://Assets/Sprites/PlayerSprites/Head/Head5.png")
 onready var head6 = preload("res://Assets/Sprites/PlayerSprites/Head/Head6.png")
 
+onready var anim_player = $RotationNode/Body/AnimationPlayer
+var isWalking = false
+var isJumping = false
+
 onready var headCollider1 = $Head1
 onready var headCollider2 = $Head2
 onready var headCollider3 = $Head3
@@ -62,6 +66,7 @@ func _process(delta):
 	steal_coin()
 	check_respawn()
 	check_door()
+	do_animation()
 
 func _physics_process(delta):
 	#Add in Gravity
@@ -94,34 +99,41 @@ func walk(inputVelocity, inputDelta):
 	var newVel = inputVelocity
 	#Preset the hasFriction variable for simplicity
 	var hasFriction = true
+	var currWalking = false
 	#If the player is pressing right
 	if Input.is_action_pressed("ui_right"):
 		#Add to the velocity
 		newVel.x += get_modified_stat(acceleration) * inputDelta
 		#And set hasFriction to false
 		hasFriction = false
+		currWalking = true
 	#If the player is pressing left
 	if Input.is_action_pressed("ui_left"):
 		#Add to the velocity
 		newVel.x -= get_modified_stat(acceleration) * inputDelta
 		#And set hasFriction to false
 		hasFriction = false
+		currWalking = true
 	if hasFriction:
 		newVel.x = lerp(newVel.x, 0, frictionAmount)
 	elif !$Sounds/WalkSound.playing and is_on_floor():
 		$Sounds/WalkSound.play(0)
 	var modifiedTopSpeed = get_modified_stat(topSpeed)
 	newVel.x = clamp(newVel.x, -modifiedTopSpeed, modifiedTopSpeed)
+	isWalking = currWalking
 	return newVel
 
 #Script for jumping movement returns modified Vector2
 func jump(inputVelocity, inputDelta):
 	if !is_on_floor():
 		return inputVelocity
+	var currJumping = false
 	var newVel = inputVelocity
 	if Input.is_action_pressed("move_jump"):
 		$Sounds/JumpSound.play(0)
 		newVel.y = get_modified_stat(jumpPower) * inputDelta
+		currJumping = true
+	isJumping = currJumping
 	return newVel
 
 func shoot():
@@ -276,7 +288,7 @@ func respawn():
 func process_head():
 	if heldCoins == 1:
 		print(headCollider1.name)
-		$RotationNode/PlayerHeadSprite.texture = head6
+		$RotationNode/Body/SpriteBody/SpriteHead.texture = head6
 		headCollider1.set_deferred("disabled", false)
 		headCollider2.set_deferred("disabled", true)
 		headCollider3.set_deferred("disabled", true)
@@ -284,7 +296,7 @@ func process_head():
 		headCollider5.set_deferred("disabled", true)
 		headCollider6.set_deferred("disabled", true)
 	elif heldCoins == 2:
-		$RotationNode/PlayerHeadSprite.texture = head5
+		$RotationNode/Body/SpriteBody/SpriteHead.texture = head5
 		headCollider1.set_deferred("disabled", true)
 		headCollider2.set_deferred("disabled", false)
 		headCollider3.set_deferred("disabled", true)
@@ -292,7 +304,7 @@ func process_head():
 		headCollider5.set_deferred("disabled", true)
 		headCollider6.set_deferred("disabled", true)
 	elif heldCoins == 3:
-		$RotationNode/PlayerHeadSprite.texture = head4
+		$RotationNode/Body/SpriteBody/SpriteHead.texture = head4
 		headCollider1.set_deferred("disabled", true)
 		headCollider2.set_deferred("disabled", true)
 		headCollider3.set_deferred("disabled", false)
@@ -300,7 +312,7 @@ func process_head():
 		headCollider5.set_deferred("disabled", true)
 		headCollider6.set_deferred("disabled", true)
 	elif heldCoins == 4:
-		$RotationNode/PlayerHeadSprite.texture = head3
+		$RotationNode/Body/SpriteBody/SpriteHead.texture = head3
 		headCollider1.set_deferred("disabled", true)
 		headCollider2.set_deferred("disabled", true)
 		headCollider3.set_deferred("disabled", true)
@@ -308,7 +320,7 @@ func process_head():
 		headCollider5.set_deferred("disabled", true)
 		headCollider6.set_deferred("disabled", true)
 	elif heldCoins == 5:
-		$RotationNode/PlayerHeadSprite.texture = head2
+		$RotationNode/Body/SpriteBody/SpriteHead.texture = head2
 		headCollider1.set_deferred("disabled", true)
 		headCollider2.set_deferred("disabled", true)
 		headCollider3.set_deferred("disabled", true)
@@ -316,7 +328,7 @@ func process_head():
 		headCollider5.set_deferred("disabled", false)
 		headCollider6.set_deferred("disabled", true)
 	elif heldCoins == 6:
-		$RotationNode/PlayerHeadSprite.texture = head1
+		$RotationNode/Body/SpriteBody/SpriteHead.texture = head1
 		headCollider1.set_deferred("disabled", true)
 		headCollider2.set_deferred("disabled", true)
 		headCollider3.set_deferred("disabled", true)
@@ -324,7 +336,7 @@ func process_head():
 		headCollider5.set_deferred("disabled", true)
 		headCollider6.set_deferred("disabled", false)
 	else :
-		$RotationNode/PlayerHeadSprite.texture = null
+		$RotationNode/Body/SpriteBody/SpriteHead.texture = null
 		headCollider1.set_deferred("disabled", true)
 		headCollider2.set_deferred("disabled", true)
 		headCollider3.set_deferred("disabled", true)
@@ -340,7 +352,22 @@ func check_door():
 	if touchingDoor and Input.is_action_just_pressed("ui_up"):
 		emit_signal("door_activated")
 
+func do_animation():
+	if isJumping:
+		play_jump()
+	elif isWalking:
+		play_walk()
+	else:
+		play_idle()
 
+func play_walk():
+	anim_player.set_current_animation("Walk")
+
+func play_idle():
+	anim_player.set_current_animation("Idle")
+
+func play_jump():
+	anim_player.set_current_animation("Jump")
 
 
 
