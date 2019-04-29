@@ -261,11 +261,11 @@ func _launch(rot, power):
 	velocity = move_and_slide(velocity)
 
 func respawn():
-	var active_bullets = get_tree().get_root().get_child(0).get_node("ActiveBullets").get_children()
+	var active_bullets = get_tree().get_nodes_in_group("CoinUp")
 	for i in range(0, active_bullets.size()):
 		active_bullets[i].queue_free()
 	
-	var inactive_bullets = get_tree().get_root().get_child(0).get_node("InactiveBullets").get_children()
+	var inactive_bullets = get_tree().get_nodes_in_group("CoinDown")
 	for i in range(0, inactive_bullets.size()):
 		inactive_bullets[i].queue_free()
 	
