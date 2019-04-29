@@ -263,6 +263,7 @@ func respawn():
 	velocity = Vector2(0, 0)
 	canShoot = true
 	canPickup = true
+	touchingDoor = false
 	touching = []
 	touchingCoins = []
 	heldCoins = maxCoins
@@ -332,7 +333,7 @@ func process_head():
 		headCollider6.set_deferred("disabled", true)
 
 func check_respawn():
-	if Input.is_action_just_pressed("player_respawn") and currCheckpoint != null:
+	if Input.is_action_just_pressed("player_respawn"):
 		respawn()
 
 func check_door():

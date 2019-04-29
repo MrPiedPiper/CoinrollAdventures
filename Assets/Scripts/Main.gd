@@ -11,6 +11,7 @@ func _change_level():
 	curr_level.call_deferred("free")
 	$CurrLevel.add_child(new_level)
 	curr_level = new_level
+	connect_signal()
 
 func connect_signal():
 	curr_level.connect("change_level", self, "_change_level")

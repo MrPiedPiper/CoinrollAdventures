@@ -23,7 +23,7 @@ func _on_Area2D_body_entered(body):
 
 func placeCoin():
 	var newCoin = coinDown.instance()
-	get_tree().get_root().get_child(0).get_node("InactiveBullets").add_child(newCoin)
+	get_node("../../InactiveBullets").call_deferred("add_child", newCoin)
 	newCoin.global_position = self.global_position
 	self.queue_free()
 
