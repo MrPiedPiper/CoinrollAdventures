@@ -69,12 +69,12 @@ func _process(delta):
 	do_animation()
 
 func _physics_process(delta):
+	#Call the build in movement function
+	velocity = move_and_slide(velocity, up)
 	#Add in Gravity
 	velocity.y += gravity * delta
 	#Do the Movement
 	velocity = movePlayer(velocity, delta)
-	#Call the build in movement function
-	velocity = move_and_slide(velocity, up)
 	#Call the shoot function
 	shoot()
 
@@ -124,15 +124,17 @@ func walk(inputVelocity, inputDelta):
 
 #Script for jumping movement returns modified Vector2
 func jump(inputVelocity, inputDelta):
-	if !is_on_floor():
-		return inputVelocity
-	var currJumping = false
 	var newVel = inputVelocity
+	if !is_on_floor():
+		if isJumping and Input.is_action_just_released("move_jump") and velocity.y < -100:
+			newVel.y = lerp(newVel.y, -100, 0.7)
+			return newVel
+		return inputVelocity
+	isJumping = false
 	if Input.is_action_pressed("move_jump"):
+		isJumping = true
 		$Sounds/JumpSound.play(0)
 		newVel.y = get_modified_stat(jumpPower) * inputDelta
-		currJumping = true
-	isJumping = currJumping
 	return newVel
 
 func shoot():
@@ -286,7 +288,6 @@ func respawn():
 
 func process_head():
 	if heldCoins == 1:
-		print(headCollider1.name)
 		$RotationNode/Body/SpriteBody/SpriteHead.texture = head6
 		headCollider1.set_deferred("disabled", false)
 		headCollider2.set_deferred("disabled", true)
