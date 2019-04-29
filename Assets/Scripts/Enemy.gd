@@ -33,13 +33,16 @@ func cycleRay():
 		return
 	var coins = get_tree().get_root().get_child(0).get_node("InactiveBullets").get_children()
 	coins.append(get_tree().get_nodes_in_group("Player")[0])
-	coins.sort_custom(self, "closest_coin_sort")
+	var positions = []
+	for i in coins:
+		positions.append(i.position)
+	positions.sort_custom(self, "closest_coin_sort")
 	isCyclingRay = true
 	var collisions = []
 	for i in range(0, coins.size()):
-		var currObject = coins[i]
+		var currObject = positions[i]
 		if currObject != null:
-			var angle = get_angle_to(coins[i].position)
+			var angle = get_angle_to(currObject)
 			$RayCast2D.rotation = angle - PI/2
 			var collision = $RayCast2D
 			if collision.is_colliding() and collision.get_collider() != null:
@@ -50,7 +53,8 @@ func cycleRay():
 	isCyclingRay = false
 	
 func closest_coin_sort(a, b):
-	if (position.x - a.position.x) + (position.y - a.position.y) < (position.x - b.position.x) + (position.y - b.position.y):
+	#if (position.x - a.position.x) + (position.y - a.position.y) < (position.x - b.position.x) + (position.y - b.position.y):
+	if (position.x - a.x) + (position.y - a.y) < (position.x - b.x) + (position.y - b.y):
 		return false
 	else:
 		return true
@@ -73,7 +77,7 @@ func grab_coin():
 	for i in range(0, touching.size()):
 		if touching[i].get_parent().is_in_group("CoinDown"):
 			set_has_coin(true)
-			touching[i].get_parent().queue_free()
+			touching[i].get_parent().call_deferred("free")
 			break
 		elif touching[i].get_parent().get_parent().is_in_group("Player"):
 			set_has_coin(true)

@@ -176,7 +176,7 @@ func pickup():
 		
 		if selectedCoin != null:
 			touchingCoins.erase(selectedCoin)
-			selectedCoin.queue_free()
+			selectedCoin.call_deferred("free")
 			canPickup = false
 			setCoinCount(heldCoins + 1)
 			$Sounds/PickupSound.play(0)
@@ -245,7 +245,7 @@ func steal_coin():
 				var currObject = touching[i].get_parent()
 				if currObject.is_in_group("Enemy") and currObject.get_has_coin():
 					if heldCoins < maxCoins:
-						connect("player_stole_coin", currObject, "_player_stole_coin")
+						connect("player_stole_coin", currObject, "_player_stole_coin", [], CONNECT_ONESHOT)
 						emit_signal("player_stole_coin")
 						setCoinCount(heldCoins+1)
 						canPickup = false

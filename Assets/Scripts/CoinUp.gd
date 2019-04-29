@@ -10,16 +10,13 @@ func _ready():
 	pass # Replace with function body.
 
 func _process(delta):
-	if isPlacing and !isTouchingPlayer:
+	if isPlacing:
 		placeCoin()
 
 func _on_Area2D_body_entered(body):
 	if body == self or body == $Area2D or body.is_in_group("Player"):
 		return
-	if isTouchingPlayer:
-		isPlacing = true
-		return
-	placeCoin()
+	isPlacing = true
 
 func placeCoin():
 	var newCoin = coinDown.instance()
@@ -29,8 +26,9 @@ func placeCoin():
 
 
 func _on_Area2D_area_entered(area):
-	if area.is_in_group("Player"):
-		isTouchingPlayer = true
+	if area == self or area == $Area2D or area == $Area2D2 or area.is_in_group("PlayerArea"):
+		return
+	isPlacing = true
 
 
 func _on_Area2D_area_exited(area):
