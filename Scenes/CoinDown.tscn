@@ -22,7 +22,7 @@ shape = SubResource( 1 )
 one_way_collision = true
 
 [node name="Area2D" type="Area2D" parent="." groups=[
-"CoinDown",
+"CoinDownArea",
 ]]
 collision_layer = 3
 collision_mask = 3

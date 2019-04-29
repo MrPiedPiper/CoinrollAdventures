@@ -26,6 +26,7 @@ func _process(delta):
 			emit_signal("button_activated")
 			$Sprite.texture = activeSprite
 			last_result = true
+			print("Pressed")
 		else:
 			emit_signal("button_deactivated")
 			$Sprite.texture = deactiveSprite

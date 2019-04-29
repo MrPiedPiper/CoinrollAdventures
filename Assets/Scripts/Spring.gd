@@ -27,7 +27,7 @@ func process_spring():
 
 func bounce():
 	for i in range(0, touching.size()):
-		if touching[i].is_in_group("Player"):
+		if touching[i].is_in_group("PlayerArea"):
 			var currObject = touching[i].get_parent().get_parent() 
 			connect("launch", currObject, "_launch", [rotation + PI/2, launchPower])
 			emit_signal("launch")

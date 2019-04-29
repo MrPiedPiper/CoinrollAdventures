@@ -31,7 +31,7 @@ func _physics_process(delta):
 func cycleRay():
 	if isCyclingRay:
 		return
-	var coins = get_tree().get_root().get_child(0).get_node("InactiveBullets").get_children()
+	var coins = get_tree().get_nodes_in_group("CoinDown")
 	coins.append(get_tree().get_nodes_in_group("Player")[0])
 	var positions = []
 	for i in coins:

@@ -30,7 +30,7 @@ onready var headCollider4 = $Head4
 onready var headCollider5 = $Head5
 onready var headCollider6 = $Head6
 
-var coinStatModifier = 0.07
+var coinStatModifier = 0.09
 
 var currCheckpoint
 var touchingCheckpoint = false
@@ -116,8 +116,7 @@ func walk(inputVelocity, inputDelta):
 		currWalking = true
 	if hasFriction:
 		newVel.x = lerp(newVel.x, 0, frictionAmount)
-	elif !$Sounds/WalkSound.playing and is_on_floor():
-		$Sounds/WalkSound.play(0)
+	#Playing the walk sound from the animation
 	var modifiedTopSpeed = get_modified_stat(topSpeed)
 	newVel.x = clamp(newVel.x, -modifiedTopSpeed, modifiedTopSpeed)
 	isWalking = currWalking
@@ -139,7 +138,7 @@ func jump(inputVelocity, inputDelta):
 func shoot():
 	if Input.is_action_just_pressed("player_shoot") and canShoot and heldCoins > 1:
 		var newBullet = bullet.instance()
-		get_tree().get_root().get_child(0).get_node("ActiveBullets").add_child(newBullet)
+		get_node("../ActiveBullets").add_child(newBullet)
 		newBullet.global_position = $RotationNode/BulletSpawn.global_position
 		var shootDir = aim_dir
 		if $RotationNode.scale.x > 0:
@@ -184,7 +183,7 @@ func pickup():
 			canPickup = true
 
 func _on_PlayerArea2D_area_entered(area):
-	if area.is_in_group("CoinDown") or area.is_in_group("CoinPickupArea"):
+	if area.is_in_group("CoinDownArea") or area.is_in_group("CoinPickupArea"):
 		touchingCoins.append(area.get_parent())
 	elif area.is_in_group("Checkpoint"):
 		if currCheckpoint != null and currCheckpoint != area:
@@ -201,7 +200,7 @@ func _on_PlayerArea2D_area_entered(area):
 	touching.append(area)
 	
 func _on_PlayerArea2D_area_exited(area):
-	if area.is_in_group("CoinDown") or area.is_in_group("CoinPickupArea"):
+	if area.is_in_group("CoinDownArea") or area.is_in_group("CoinPickupArea"):
 		touchingCoins.erase(area.get_parent())
 	elif area.is_in_group("Checkpoint"):
 		touchingCheckpoint = false

@@ -13,7 +13,3 @@ __meta__ = {
 [node name="CurrLevel" type="Node2D" parent="."]
 
 [node name="Level" parent="CurrLevel" instance=ExtResource( 2 )]
-
-[node name="ActiveBullets" type="Node2D" parent="."]
-
-[node name="InactiveBullets" type="Node2D" parent="."]
