@@ -143,14 +143,20 @@ func shoot():
 		get_node("../ActiveBullets").add_child(newBullet)
 		newBullet.global_position = $RotationNode/BulletSpawn.global_position
 		var shootDir = aim_dir
-		if $RotationNode.scale.x > 0:
-			if shootDir == Vector2(0, 0):
-				shootDir.x = 1
-		else:
-			if shootDir == Vector2(0, 0):
-				shootDir.x = -1
+#		if $RotationNode.scale.x > 0:
+#			if shootDir == Vector2(0, 0):
+#				shootDir.x = 1
+#		else:
+#			if shootDir == Vector2(0, 0):
+#				shootDir.x = -1
+
+		#Try with mouse controls
+		var mouse_pos = get_global_mouse_position()
+		var angle = rad2deg(get_angle_to(mouse_pos)+90)
+		var new_angle = 45 * floor((angle / 45)+270)
+		
 		newBullet.linear_velocity = Vector2(shootVel, 0)
-		newBullet.linear_velocity = newBullet.linear_velocity.rotated(shootDir.normalized().angle())
+		newBullet.linear_velocity = newBullet.linear_velocity.rotated(deg2rad(new_angle))
 		canShoot = false
 		setCoinCount(heldCoins-1)
 		$Sounds/ShootSound.play(0)

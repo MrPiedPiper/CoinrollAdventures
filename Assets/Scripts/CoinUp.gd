@@ -26,7 +26,7 @@ func placeCoin():
 
 
 func _on_Area2D_area_entered(area):
-	if area == self or area == $Area2D or area == $Area2D2 or area.is_in_group("PlayerArea"):
+	if area == self or area == $Area2D or area == $Area2D2 or area.is_in_group("PlayerArea") or area.is_in_group("SpringArea"):
 		return
 	isPlacing = true
 
